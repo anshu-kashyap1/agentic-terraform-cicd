@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  tools {
+    terraform 'Terraform_1.6.6'  // 👈 Name must match what's defined in Jenkins > Global Tool Configuration
+  }
+
   environment {
     TF_VAR_region = 'ap-south-1'
   }
