@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   tools {
-    terraform 'Terraform-plugin'  // 👈 Name must match what's defined in Jenkins > Global Tool Configuration
+    terraform 'Terraform-plugin'
   }
 
   environment {
@@ -10,27 +10,39 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
-
     stage('Terraform Init') {
       steps {
-        sh 'terraform init'
+        withCredentials([
+          string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+          string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+          string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+        ]) {
+          sh 'terraform init'
+        }
       }
     }
 
     stage('Terraform Plan') {
       steps {
-        sh 'terraform plan -out=tfplan'
+        withCredentials([
+          string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+          string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+          string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+        ]) {
+          sh 'terraform plan -out=tfplan'
+        }
       }
     }
 
     stage('Terraform Apply') {
       steps {
-        sh 'terraform apply -auto-approve tfplan'
+        withCredentials([
+          string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+          string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+          string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+        ]) {
+          sh 'terraform apply -auto-approve tfplan'
+        }
       }
     }
   }
