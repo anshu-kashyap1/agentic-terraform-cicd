@@ -10,6 +10,12 @@ pipeline {
   }
 
   stages {
+    stage('Security Scan') {
+      steps {
+        sh 'snyk test || true'
+      }
+    }
+
     stage('Terraform Init') {
       steps {
         withCredentials([
